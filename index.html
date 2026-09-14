@@ -1,0 +1,612 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Vantaca Onboarding Process Atlas — Monitor</title>
+<link rel="preconnect" href="https://api.fontshare.com" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://api.fontshare.com/v2/css?f[]=satoshi@400,500,600,700&display=swap" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="styles.css" />
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='4' fill='%231b1d24'/%3E%3Cpath d='M7 22h18M7 16h12M7 10h6' stroke='%23f2efe9' stroke-width='2.4' stroke-linecap='square'/%3E%3Ccircle cx='25' cy='10' r='2.6' fill='%23d1442c'/%3E%3C/svg%3E" />
+</head>
+<body>
+<div class="app">
+
+  <aside id="sidebar">
+    <div class="logo">
+      <svg width="26" height="26" viewBox="0 0 32 32" fill="none" aria-label="Vantaca Onboarding Process Atlas">
+        <path d="M4 24h24M4 16h16M4 8h8" stroke="currentColor" stroke-width="2.2" stroke-linecap="square"/>
+        <circle cx="26" cy="8" r="3" fill="currentColor" opacity=".55"/>
+      </svg>
+      <span><b>Process Atlas</b><span>Vantaca onboarding</span></span>
+    </div>
+    <nav class="side" id="nav">
+      <span class="lbl">Model the work</span>
+      <button data-view="overview" aria-current="true">Control room</button>
+      <button data-view="atlas">Stage atlas<span class="ct">8</span></button>
+      <button data-view="pipeline">Stage board<span class="ct" id="ct-pipe"></span></button>
+      <span class="lbl">Identify variance</span>
+      <button data-view="register">Process register<span class="ct" id="ct-reg"></span></button>
+      <button data-view="matrix">Variance matrix</button>
+      <button data-view="gaps">Gap register<span class="ct" id="ct-gap"></span></button>
+      <span class="lbl">Govern the transition</span>
+      <button data-view="streams">Value streams<span class="ct" id="ct-vs"></span></button>
+      <button data-view="evidence">Evidence intake<span class="ct" id="ct-ev"></span></button>
+      <button data-view="decisions">Decisions<span class="ct" id="ct-dec"></span></button>
+      <button data-view="rubric">Rubric readiness</button>
+    </nav>
+    <div class="sidefoot">
+      Working draft · value stream taxonomy pending validation<br />
+      <span id="lastsave">No unsaved edits · export to keep changes</span>
+    </div>
+  </aside>
+
+  <header class="top">
+    <button class="btn icon menubtn" id="menuBtn" aria-label="Toggle navigation"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
+    <div>
+      <h1 id="viewTitle">Control room</h1>
+      <p class="sub" id="viewSub">Company standard to repeatable branch onboarding — live health</p>
+    </div>
+    <div class="spacer"></div>
+    <button class="btn" id="newBtn">+ Define process</button>
+    <button class="btn" id="exportBtn">Export JSON</button>
+    <button class="btn" id="importBtn">Import</button>
+    <input type="file" id="importFile" accept="application/json" class="sr" />
+    <button class="btn icon" id="themeBtn" aria-label="Toggle theme" title="Toggle theme"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 3a9 9 0 1 0 9 9 7 7 0 0 1-9-9z"/></svg></button>
+  </header>
+
+  <main id="main">
+    <!-- CONTROL ROOM -->
+    <section class="view on" id="v-overview">
+      <div class="kpis" id="kpis"></div>
+
+      <div class="cols">
+        <div class="panel">
+          <div class="ph"><h3>Company standard → repeatable branch onboarding</h3><span class="hint">click a stage to filter the register</span></div>
+          <div class="pb"><div class="funnel" id="funnel"></div></div>
+        </div>
+      </div>
+
+      <div class="cols c-2">
+        <div class="panel">
+          <div class="ph"><h3>Attention required</h3><span class="hint" id="alertCount"></span></div>
+          <div class="pb" id="alerts"></div>
+        </div>
+        <div>
+          <div class="panel">
+            <div class="ph"><h3>Value stream coverage</h3><span class="hint">by furthest stage reached</span></div>
+            <div class="pb" id="vsCoverage"></div>
+          </div>
+          <div class="panel" style="margin-top:1rem">
+            <div class="ph"><h3>Rubric readiness by domain</h3><span class="hint">(PC + AC) / (PC + AC + FB)</span></div>
+            <div class="pb" id="readiness"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="cols c-2">
+        <div class="panel">
+          <div class="ph"><h3>Open decisions</h3><span class="hint">blocking the standard</span></div>
+          <div class="pb" id="decSummary"></div>
+        </div>
+        <div class="panel">
+          <div class="ph"><h3>Evidence intake</h3><span class="hint">40 branch sessions</span></div>
+          <div class="pb" id="evSummary"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ATLAS -->
+    <section class="view" id="v-atlas">
+      <div class="atlashero">
+        <span class="eyebrow">Company standard → repeatable branch onboarding</span>
+        <h2>Model the work. Identify variance. Govern the transition.</h2>
+        <p>Run the guided walkthrough for a stakeholder review, or open a stage to see the processes sitting in it.</p>
+        <div class="herobtns">
+          <button class="btn primary" id="guideBtn">▶ Start guided walkthrough</button>
+          <button class="btn" id="guideExit" hidden>Exit walkthrough</button>
+        </div>
+      </div>
+      <div class="guidebar" id="guidebar" hidden>
+        <span class="gcount" id="gCount">1/8</span>
+        <div class="gtext"><span class="glabel">Guided walkthrough</span><b id="gName"></b><span id="gSub"></span></div>
+        <div class="gctl">
+          <button class="btn" id="gPrev">← Previous</button>
+          <button class="btn" id="gPause">❚❚ Pause</button>
+          <button class="btn" id="gNext">Next →</button>
+        </div>
+      </div>
+      <div class="strip" id="strip"></div>
+      <div class="stagegrid" id="stagegrid"></div>
+    </section>
+
+    <!-- GAP REGISTER -->
+    <section class="view" id="v-gaps">
+      <div class="kpis" id="gapKpis" style="grid-template-columns:repeat(4,minmax(0,1fr))"></div>
+      <div class="filters" style="margin-top:1rem">
+        <select id="gType"></select>
+        <select id="gPrio"></select>
+        <select id="gvs"></select>
+        <select id="gOwn"><option value="">All gaps</option><option value="unowned">Unowned</option><option value="notarget">No target date</option></select>
+        <span class="count" id="gapCount"></span>
+      </div>
+      <div class="tablewrap"><table>
+        <thead><tr><th>Gap</th><th>Process</th><th>Value stream</th><th>Type</th><th>Impact</th><th>Priority</th><th>Owner</th><th>Target</th></tr></thead>
+        <tbody id="gapBody"></tbody>
+      </table></div>
+    </section>
+
+    <!-- REGISTER -->
+    <section class="view" id="v-register">
+      <div class="filters">
+        <input type="search" id="q" placeholder="Search process, capability, system, evidence…" />
+        <select id="fvs"></select>
+        <select id="fstage"></select>
+        <select id="fowner"></select>
+        <select id="fflag">
+          <option value="">All records</option>
+          <option value="untraced">Missing traceability</option>
+          <option value="nosys">No system mapping</option>
+          <option value="fb">FB-heavy (gaps)</option>
+          <option value="unassigned">Unassigned stream</option>
+        </select>
+        <button class="btn" id="clearF">Clear</button>
+        <span class="count" id="regCount"></span>
+      </div>
+      <div class="tablewrap"><table id="regTable">
+        <thead><tr>
+          <th data-sort="name">Process</th>
+          <th data-sort="vs">Value stream</th>
+          <th data-sort="stage">Stage</th>
+          <th data-sort="readiness">Readiness</th>
+          <th data-sort="mix">PC / AC / FB / NA</th>
+          <th data-sort="branches">Branch coverage</th>
+          <th data-sort="owner">Owner</th>
+          <th data-sort="updated">Updated</th>
+        </tr></thead>
+        <tbody id="regBody"></tbody>
+      </table></div>
+    </section>
+
+    <!-- PIPELINE -->
+    <section class="view" id="v-pipeline">
+      <div class="filters">
+        <select id="pvs"></select>
+        <span class="count">Drag a card to change stage. Click to open the definition.</span>
+      </div>
+      <div class="board" id="board"></div>
+    </section>
+
+    <!-- STREAMS -->
+    <section class="view" id="v-streams">
+      <div class="cols c-2" id="vsCards" style="margin-top:0"></div>
+    </section>
+
+    <!-- EVIDENCE -->
+    <section class="view" id="v-evidence">
+      <div class="filters">
+        <select id="ebranch"></select>
+        <select id="estatus"></select>
+        <span class="count" id="evCount"></span>
+      </div>
+      <div class="cols c-ev" style="margin-top:0">
+        <div class="panel">
+          <div class="ph"><h3>Intake by branch group</h3><span class="hint">sessions analyzed vs. total</span></div>
+          <div class="pb" id="branchBars"></div>
+        </div>
+        <div class="tablewrap"><table>
+          <thead><tr><th>Date</th><th>Session</th><th>Branch group</th><th>Status</th><th>Linked processes</th><th></th></tr></thead>
+          <tbody id="evBody"></tbody>
+        </table></div>
+      </div>
+    </section>
+
+    <!-- MATRIX -->
+    <section class="view" id="v-matrix">
+      <div class="filters">
+        <select id="mvs"></select>
+        <span class="count">Click a cell to cycle: common → variant → unique → missing → blank</span>
+      </div>
+      <div class="tablewrap"><table class="matrix" id="matrixTable"></table></div>
+      <div class="legend">
+        <span style="color:var(--green)"><b>Common</b> — same practice</span>
+        <span style="color:var(--gold)"><b>Variant</b> — legitimate difference</span>
+        <span style="color:var(--accent)"><b>Unique</b> — branch-only practice</span>
+        <span style="color:var(--purple)"><b>Missing</b> — process element absent</span>
+        <span><b>—</b> no evidence yet</span>
+      </div>
+    </section>
+
+    <!-- DECISIONS -->
+    <section class="view" id="v-decisions">
+      <div class="panel" style="margin-bottom:1rem">
+        <div class="ph"><h3>Log a decision</h3><span class="hint">every open decision blocks a standard</span></div>
+        <div class="pb">
+          <div class="inlineadd">
+            <input class="grow" id="dTitle" placeholder="Decision needed…" />
+            <input id="dOwner" placeholder="Owner" />
+            <select id="dType"><option>Taxonomy</option><option>Standard</option><option>Scope</option><option>Artifact</option><option>Framework</option><option>Governance</option><option>System</option></select>
+            <input id="dDue" type="date" />
+            <button class="btn primary" id="dAdd">Add</button>
+          </div>
+        </div>
+      </div>
+      <div class="tablewrap"><table>
+        <thead><tr><th>ID</th><th>Decision</th><th>Type</th><th>Owner</th><th>Due</th><th>Status</th><th></th></tr></thead>
+        <tbody id="decBody"></tbody>
+      </table></div>
+    </section>
+
+    <!-- RUBRIC -->
+    <section class="view" id="v-rubric">
+      <div class="cols c-2" style="margin-top:0">
+        <div class="panel">
+          <div class="ph"><h3>Readiness by domain</h3><span class="hint">from classified dimensions</span></div>
+          <div class="pb" id="rubDomains"></div>
+        </div>
+        <div class="panel">
+          <div class="ph"><h3>Classification totals</h3><span class="hint">across tracked processes</span></div>
+          <div class="pb" id="rubTotals"></div>
+        </div>
+      </div>
+      <div class="panel" style="margin-top:1rem">
+        <div class="ph"><h3>Classification routing</h3><span class="hint">where each outcome goes</span></div>
+        <div class="pb" id="rubRouting"></div>
+      </div>
+    </section>
+  </main>
+</div>
+
+<div class="scrim" id="scrim"></div>
+<aside class="drawer" id="drawer" aria-hidden="true">
+  <div class="dh">
+    <div style="flex:1">
+      <h2 id="dName">Process</h2>
+      <div class="m" id="dMeta"></div>
+    </div>
+    <button class="btn icon" id="dClose" aria-label="Close">✕</button>
+  </div>
+  <div class="db" id="dBody"></div>
+  <div class="df">
+    <button class="btn" id="dBack">← Stage back</button>
+    <button class="btn primary" id="dFwd">Advance stage →</button>
+    <button class="btn" id="dDelete">Delete</button>
+    <span class="savehint" id="saveHint">Recorded</span>
+  </div>
+</aside>
+
+<script src="data.js"></script>
+<script src="app.js"></script>
+<script data-pplx-inline-edit>
+(function () {
+  if (window === window.top) return;
+
+  const allowedParentOrigins = ["https://www.perplexity.ai","https://perplexity.ai","https://testing.perplexity.ai","https://staging.perplexity.ai","https://*.preview.i.perplexity.ai","http://perplexity.localhost","http://localhost:1420","http://127.0.0.1:1420","http://localhost:3000","http://127.0.0.1:3000","http://localhost:5173","http://127.0.0.1:5173"];
+  const MAX_FONT_BYTES = 500 * 1024;
+  const MAX_TOTAL_FONT_BYTES = 2 * 1024 * 1024;
+  let scrollForwarding = false;
+  let scrollRaf = 0;
+  let trustedTopOrigin = null;
+
+  // Allow entries like "https://*.preview.i.perplexity.ai" — the wildcard
+  // matches a single DNS label (no dots), so "https://*.foo" cannot stretch
+  // across multiple labels.
+  function matchesAllowedOrigin(origin) {
+    if (!origin) return false;
+    for (const entry of allowedParentOrigins) {
+      if (!entry.includes("*")) {
+        if (entry === origin) return true;
+        continue;
+      }
+      const pattern = new RegExp(
+        "^" +
+          entry.replace(/[.+?^${}()|[\]\\]/g, "\\$&").replace(/\*/g, "[^.]+") +
+          "$",
+      );
+      if (pattern.test(origin)) return true;
+    }
+    return false;
+  }
+
+  // Trust decision: when the sender is same-origin-visible (event.origin is a
+  // real origin like https://www.perplexity.ai) we trust event.origin directly.
+  // When event.origin is "null" (opaque broker srcdoc), we fall back to the
+  // broker's stamped `parentOrigin` to identify the top window. The fallback
+  // is claim-only — we rely on the browser's native `targetOrigin` enforcement
+  // on the response path (see postToTrustedTop) to ensure replies can't be
+  // delivered to anyone but the actual top window of that claimed origin.
+  function getTrustedParentOrigin(event) {
+    const forwardedParentOrigin =
+      typeof event.data.parentOrigin === "string" ? event.data.parentOrigin : null;
+    const parentOrigin = event.origin === "null" ? forwardedParentOrigin : event.origin;
+    return matchesAllowedOrigin(parentOrigin) ? parentOrigin : null;
+  }
+
+  // All responses go to window.top with targetOrigin = the allowlisted origin.
+  // An attacker that iframes us inside their own null-origin broker can claim
+  // any parentOrigin they like, but the browser will drop the reply whenever
+  // the real top's origin doesn't match — so the screenshot never leaves.
+  function postToTrustedTop(message) {
+    if (!trustedTopOrigin) return;
+    try {
+      window.top.postMessage(message, trustedTopOrigin);
+    } catch (_error) {}
+  }
+
+  function inlineAll(original, clone) {
+    if (original.nodeType !== 1 || clone.nodeType !== 1) return;
+
+    try {
+      const computedStyle = getComputedStyle(original);
+      // cssText on a computed style is the serialized declaration in modern
+      // Chromium/Safari — a single read beats enumerating ~400 longhand
+      // properties. Firefox returns "" here, so we fall back on empty.
+      const serialized = computedStyle.cssText;
+      if (serialized) {
+        clone.style.cssText = serialized;
+      } else {
+        const parts = new Array(computedStyle.length);
+        for (let index = 0; index < computedStyle.length; index += 1) {
+          const property = computedStyle[index];
+          parts[index] = `${property}:${computedStyle.getPropertyValue(property)};`;
+        }
+        clone.style.cssText = parts.join("");
+      }
+    } catch (_error) {}
+
+    const originalChildren = original.children;
+    const clonedChildren = clone.children;
+    for (
+      let index = 0;
+      index < originalChildren.length && index < clonedChildren.length;
+      index += 1
+    ) {
+      inlineAll(originalChildren[index], clonedChildren[index]);
+    }
+  }
+
+  function extractFontUrl(srcValue) {
+    const matches = [
+      ...srcValue.matchAll(
+        /url\(["']?([^"')]+)["']?\)(?:\s*format\(["']?([^"')]+)["']?\))?/gi,
+      ),
+    ];
+    if (matches.length === 0) return null;
+    const woff2 = matches.find((m) => m[2] && m[2].toLowerCase().includes("woff2"));
+    if (woff2) return woff2[1];
+    const woff = matches.find((m) => m[2] && m[2].toLowerCase().includes("woff"));
+    if (woff) return woff[1];
+    return matches[0][1];
+  }
+
+  // Cache resolved font URL -> data URI across captures. Fonts on a page
+  // essentially never change, and a batch run emits multiple captures back to
+  // back — without this we'd refetch + re-base64 every time.
+  const fontDataUriCache = new Map();
+  const SRC_DECLARATION_RE = /src\s*:\s*[^;}]+/i;
+
+  async function fetchAsDataUri(url) {
+    if (fontDataUriCache.has(url)) return fontDataUriCache.get(url);
+    let dataUri = null;
+    try {
+      const response = await fetch(url, { mode: "cors", credentials: "omit" });
+      if (response.ok) {
+        const blob = await response.blob();
+        if (blob.size <= MAX_FONT_BYTES) {
+          dataUri = await new Promise((resolve) => {
+            const reader = new FileReader();
+            reader.onloadend = () =>
+              resolve(typeof reader.result === "string" ? reader.result : null);
+            reader.onerror = () => resolve(null);
+            reader.readAsDataURL(blob);
+          });
+        }
+      }
+    } catch (_error) {
+      dataUri = null;
+    }
+    fontDataUriCache.set(url, dataUri);
+    return dataUri;
+  }
+
+  function collectFontFaceRuleTexts() {
+    const rules = [];
+    for (const sheet of document.styleSheets) {
+      let cssRules;
+      try {
+        cssRules = sheet.cssRules;
+      } catch (_error) {
+        continue;
+      }
+      if (!cssRules) continue;
+      for (const rule of cssRules) {
+        const cssText = rule.cssText || "";
+        if (cssText.startsWith("@font-face")) rules.push(cssText);
+      }
+    }
+    return rules;
+  }
+
+  async function buildInlinedFontCss() {
+    const ruleTexts = collectFontFaceRuleTexts();
+    if (ruleTexts.length === 0) return null;
+
+    const resolved = ruleTexts.map((cssText) => {
+      if (!SRC_DECLARATION_RE.test(cssText)) return null;
+      const srcMatch = cssText.match(/src\s*:\s*([^;}]+)[;}]/i);
+      if (!srcMatch) return null;
+      const url = extractFontUrl(srcMatch[1]);
+      if (!url) return null;
+      try {
+        return { cssText, url: new URL(url, document.baseURI).href };
+      } catch (_error) {
+        return null;
+      }
+    });
+
+    const dataUris = await Promise.all(
+      resolved.map((entry) => (entry ? fetchAsDataUri(entry.url) : Promise.resolve(null))),
+    );
+
+    const inlined = [];
+    let totalBytes = 0;
+    for (let index = 0; index < resolved.length; index += 1) {
+      const entry = resolved[index];
+      const dataUri = dataUris[index];
+      if (!entry || !dataUri) continue;
+      const approxBytes = dataUri.length * 0.75;
+      if (totalBytes + approxBytes > MAX_TOTAL_FONT_BYTES) break;
+      totalBytes += approxBytes;
+      inlined.push(entry.cssText.replace(SRC_DECLARATION_RE, `src: url("${dataUri}")`));
+    }
+    return inlined.length > 0 ? inlined.join("\n") : null;
+  }
+
+  function stripExternal(clone) {
+    const images = clone.querySelectorAll("img");
+    for (let index = 0; index < images.length; index += 1) {
+      const src = images[index].getAttribute("src");
+      if (src && !src.startsWith("data:")) images[index].removeAttribute("src");
+    }
+
+    const elements = clone.querySelectorAll("*");
+    for (let index = 0; index < elements.length; index += 1) {
+      const style = elements[index].style.cssText;
+      if (style && style.includes("url(")) {
+        elements[index].style.cssText = style.replace(
+          /url\(["']?(?!data:)[^)"']*["']?\)/gi,
+          "none",
+        );
+      }
+    }
+  }
+
+  function emitScroll() {
+    scrollRaf = 0;
+    if (!scrollForwarding) return;
+    postToTrustedTop({
+      type: "INLINE_EDIT_SCROLL",
+      scrollX: window.scrollX,
+      scrollY: window.scrollY,
+    });
+  }
+
+  window.addEventListener(
+    "scroll",
+    function () {
+      if (!scrollForwarding || scrollRaf) return;
+      scrollRaf = requestAnimationFrame(emitScroll);
+    },
+    { passive: true, capture: true },
+  );
+
+  async function handleCaptureRequest(event) {
+    const requestId = event.data.requestId;
+    const scrollX = window.scrollX;
+    const scrollY = window.scrollY;
+    const width = window.innerWidth;
+    const height = window.innerHeight;
+
+    function postResult(dataUrl) {
+      postToTrustedTop({
+        type: "INLINE_EDIT_SCREENSHOT_RESULT",
+        requestId,
+        dataUrl,
+        scrollX,
+        scrollY,
+      });
+    }
+
+    try {
+      // Wait for any pending web fonts to resolve so both inline metrics and
+      // the @font-face inlining below see the same loaded faces.
+      if (document.fonts && document.fonts.ready) {
+        try {
+          await document.fonts.ready;
+        } catch (_error) {}
+      }
+
+      const clone = document.documentElement.cloneNode(true);
+      inlineAll(document.documentElement, clone);
+
+      const removedNodes = clone.querySelectorAll("script,link[rel=\"stylesheet\"],style");
+      for (let index = 0; index < removedNodes.length; index += 1) {
+        removedNodes[index].remove();
+      }
+
+      stripExternal(clone);
+
+      // Re-embed web fonts as data-URI @font-face rules so the SVG rasterizer
+      // can resolve them — external font URLs aren't fetched during
+      // foreignObject rendering, which would otherwise force a fallback face
+      // and change text metrics.
+      const inlinedFontCss = await buildInlinedFontCss();
+      if (inlinedFontCss) {
+        const styleEl = document.createElement("style");
+        styleEl.textContent = inlinedFontCss;
+        const head = clone.querySelector("head");
+        if (head) head.appendChild(styleEl);
+        else clone.insertBefore(styleEl, clone.firstChild);
+      }
+
+      const html = new XMLSerializer().serializeToString(clone);
+      const svg =
+        `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}">` +
+        '<foreignObject width="100%" height="100%">' +
+        `<div xmlns="http://www.w3.org/1999/xhtml" style="width:${width}px;height:${height}px;overflow:hidden">` +
+        `<div style="position:relative;left:-${scrollX}px;top:-${scrollY}px">` +
+        html +
+        "</div></div></foreignObject></svg>";
+      const svgUrl = `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`;
+      const image = new Image();
+      image.onload = function () {
+        const canvas = document.createElement("canvas");
+        canvas.width = width;
+        canvas.height = height;
+        canvas.getContext("2d").drawImage(image, 0, 0);
+        postResult(canvas.toDataURL("image/png"));
+      };
+      image.onerror = function () {
+        postResult(null);
+      };
+      image.src = svgUrl;
+    } catch (_error) {
+      postResult(null);
+    }
+  }
+
+  window.addEventListener("message", function (event) {
+    if (!event.data) return;
+    // Only accept messages from the direct parent frame. Blocks sibling /
+    // unrelated-window postMessage senders that could otherwise reach us.
+    if (event.source !== window.parent) return;
+
+    const trustedParentOrigin = getTrustedParentOrigin(event);
+    if (!trustedParentOrigin) return;
+    trustedTopOrigin = trustedParentOrigin;
+
+    if (event.data.type === "INLINE_EDIT_SCROLL_START") {
+      scrollForwarding = true;
+      emitScroll();
+      return;
+    }
+
+    if (event.data.type === "INLINE_EDIT_SCROLL_STOP") {
+      scrollForwarding = false;
+      if (scrollRaf) cancelAnimationFrame(scrollRaf);
+      scrollRaf = 0;
+      return;
+    }
+
+    if (event.data.type !== "INLINE_EDIT_CAPTURE_REQUEST") return;
+
+    handleCaptureRequest(event);
+  });
+})();
+
+
+</script></body>
+</html>
